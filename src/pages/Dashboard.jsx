@@ -85,12 +85,20 @@ export default function Dashboard() {
     score: r.percentage || 0
   }));
 
-  // Skills Distribution (Mocking based on scores for visual effect, but ideally from resume/tests)
+  const avgClarity = interviewSessions.length > 0 
+    ? Math.round(interviewSessions.reduce((acc, curr) => acc + (curr.analysis?.scores?.clarity || 0), 0) / interviewSessions.length)
+    : 0;
+
+  const avgConfidence = interviewSessions.length > 0 
+    ? Math.round(interviewSessions.reduce((acc, curr) => acc + (curr.analysis?.scores?.confidence || 0), 0) / interviewSessions.length)
+    : 0;
+
+  // Skills Distribution
   const skillsData = [
     { name: 'Problem Solving', value: avgTestScore > 0 ? avgTestScore : 0 },
-    { name: 'Communication', value: interviewSessions.length > 0 ? interviewSessions[0]?.analysis?.scores?.clarity || 0 : 0 },
+    { name: 'Communication', value: avgClarity },
     { name: 'Technical', value: avgTestScore > 0 ? Math.min(avgTestScore + 5, 100) : 0 },
-    { name: 'Confidence', value: interviewSessions.length > 0 ? interviewSessions[0]?.analysis?.scores?.confidence || 0 : 0 }
+    { name: 'Confidence', value: avgConfidence }
   ];
 
   const recentAssessments = [...testResults, ...interviewSessions]
