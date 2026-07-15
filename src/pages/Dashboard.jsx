@@ -87,10 +87,10 @@ export default function Dashboard() {
 
   // Skills Distribution (Mocking based on scores for visual effect, but ideally from resume/tests)
   const skillsData = [
-    { name: 'Problem Solving', value: avgTestScore > 0 ? avgTestScore : 65 },
-    { name: 'Communication', value: interviewSessions.length > 0 ? interviewSessions[0]?.analysis?.scores?.clarity || 70 : 60 },
-    { name: 'Technical', value: avgTestScore > 0 ? Math.min(avgTestScore + 5, 100) : 55 },
-    { name: 'Confidence', value: interviewSessions.length > 0 ? interviewSessions[0]?.analysis?.scores?.confidence || 80 : 50 }
+    { name: 'Problem Solving', value: avgTestScore > 0 ? avgTestScore : 0 },
+    { name: 'Communication', value: interviewSessions.length > 0 ? interviewSessions[0]?.analysis?.scores?.clarity || 0 : 0 },
+    { name: 'Technical', value: avgTestScore > 0 ? Math.min(avgTestScore + 5, 100) : 0 },
+    { name: 'Confidence', value: interviewSessions.length > 0 ? interviewSessions[0]?.analysis?.scores?.confidence || 0 : 0 }
   ];
 
   const recentAssessments = [...testResults, ...interviewSessions]
