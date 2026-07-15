@@ -1,0 +1,5 @@
+fastapi
+uvicorn
+websockets
+opencv-python-headless
+mediapipe>=0.10.30
