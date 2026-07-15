@@ -41,15 +41,7 @@ export default function LandingPage() {
           </button>
         </div>
 
-        <div className="mt-20">
-          <button
-            onClick={() => navigate('/login')}
-            className="text-[10px] uppercase tracking-[0.3em] font-black text-gray-300 hover:text-black transition-all cursor-pointer flex items-center gap-2 mx-auto group"
-          >
-            <div className="w-1.5 h-1.5 rounded-full bg-gray-200 group-hover:bg-black transition-all" />
-            Admin Portal Access
-          </button>
-        </div>
+
       </motion.div>
 
       {/* Modals */}
