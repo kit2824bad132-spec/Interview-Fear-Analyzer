@@ -148,7 +148,7 @@ const Technical = () => {
   useEffect(() => {
     async function fetchChallenge() {
       try {
-        const res = await fetch('http://127.0.0.1:5000/api/generate-technical-question', {
+        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000'}/api/generate-technical-question`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email: user?.email })
@@ -248,7 +248,7 @@ const Technical = () => {
     // ── Live Admin Stream via WebSocket ───────────────────────────────────
     try {
       const email = encodeURIComponent(user?.email || 'anonymous');
-      const liveWs = new WebSocket(`ws://127.0.0.1:5000/proctor?role=student&email=${email}`);
+      const liveWs = new WebSocket(`${import.meta.env.VITE_WS_URL || 'ws://127.0.0.1:5000'}/proctor?role=student&email=${email}`);
       liveWsRef.current = liveWs;
 
       liveWs.onopen = () => {
@@ -424,7 +424,7 @@ const Technical = () => {
     setLeftTab("review");
 
     try {
-      const response = await fetch('http://127.0.0.1:5000/api/analyze-code', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000'}/api/analyze-code`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -484,7 +484,7 @@ const Technical = () => {
     let finalReview = aiReview;
     if (!finalReview) {
       try {
-        const response = await fetch('http://127.0.0.1:5000/api/analyze-code', {
+        const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000'}/api/analyze-code`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -523,7 +523,7 @@ const Technical = () => {
         formData.append('video', videoBlob, 'video.webm');
       }
 
-      await fetch('http://127.0.0.1:5000/api/interview-session/save', {
+      await fetch(`${import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000'}/api/interview-session/save`, {
         method: 'POST',
         body: formData
       });

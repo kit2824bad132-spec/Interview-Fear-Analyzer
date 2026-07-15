@@ -49,7 +49,7 @@ export default function AdminPanel() {
     if (activeTab === 'results') {
       const fetchResults = async () => {
         try {
-          const res = await fetch('http://127.0.0.1:5000/api/test-results');
+          const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000'}/api/test-results`);
           if (res.ok) setResults(await res.json());
         } catch (err) { console.error('Failed to fetch results', err); }
       };
@@ -58,7 +58,7 @@ export default function AdminPanel() {
     } else if (activeTab === 'resumes') {
       const fetchResumes = async () => {
         try {
-          const res = await fetch('http://127.0.0.1:5000/api/admin/users');
+          const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000'}/api/admin/users`);
           if (res.ok) setResumes(await res.json());
         } catch (err) { console.error('Failed to fetch resumes', err); }
       };
@@ -67,7 +67,7 @@ export default function AdminPanel() {
     } else if (activeTab === 'interviews') {
       const fetchSessions = async () => {
         try {
-          const res = await fetch('http://127.0.0.1:5000/api/admin/interview-sessions');
+          const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000'}/api/admin/interview-sessions`);
           if (res.ok) setInterviewSessions(await res.json());
         } catch (err) { console.error('Failed to fetch sessions', err); }
       };
@@ -79,7 +79,7 @@ export default function AdminPanel() {
       liveFramesRef.current = {};
 
       // Connect admin WebSocket for live monitoring
-      const ws = new WebSocket('ws://127.0.0.1:5000/proctor?role=admin');
+      const ws = new WebSocket(`${import.meta.env.VITE_WS_URL || 'ws://127.0.0.1:5000'}/proctor?role=admin`);
       adminWsRef.current = ws;
 
       ws.onopen = () => {

@@ -95,7 +95,7 @@ export default function ResultPage() {
       }
 
       // Send to backend
-      fetch('http://127.0.0.1:5000/api/test-results/save', {
+      fetch(`${import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000'}/api/test-results/save`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(resultsToSave)

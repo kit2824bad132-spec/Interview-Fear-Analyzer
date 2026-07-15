@@ -77,7 +77,7 @@ export default function TestPage() {
   useEffect(() => {
     if (!user?.email) return;
     
-    const ws = new WebSocket(`ws://127.0.0.1:5000/proctor?email=${user.email}`);
+    const ws = new WebSocket(`${import.meta.env.VITE_WS_URL || 'ws://127.0.0.1:5000'}/proctor?email=${user.email}`);
     wsRef.current = ws;
     
     return () => {

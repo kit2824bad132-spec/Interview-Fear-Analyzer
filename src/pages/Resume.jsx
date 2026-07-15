@@ -96,7 +96,7 @@ const Resume = () => {
     async function loadStoredProfile() {
       if (!user?.email) return;
       try {
-        const res = await fetch(`http://127.0.0.1:5000/api/admin/users`);
+        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000'}/api/admin/users`);
         if (res.ok) {
            const users = await res.json();
            const currentUser = users.find(u => u.userEmail === user.email);
@@ -145,7 +145,7 @@ const Resume = () => {
         formData.append('email', user.email);
       }
       
-      const response = await fetch('http://127.0.0.1:5000/api/extract-resume', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000'}/api/extract-resume`, {
         method: 'POST',
         body: formData
       });

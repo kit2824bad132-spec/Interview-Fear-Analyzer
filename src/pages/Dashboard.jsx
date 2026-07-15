@@ -33,24 +33,24 @@ export default function Dashboard() {
       try {
         // 1. Fetch Users
         if (isAdmin) {
-          const usersRes = await fetch('http://127.0.0.1:5000/api/auth/users');
+          const usersRes = await fetch(`${import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000'}/api/auth/users`);
           if (usersRes.ok) setAllUsers(await usersRes.json());
         }
 
         // 2. Fetch Test Results
-        const url = isAdmin ? 'http://127.0.0.1:5000/api/test-results' : `http://127.0.0.1:5000/api/test-results/${user?.email}`;
+        const url = isAdmin ? `${import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000'}/api/test-results` : `${import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000'}/api/test-results/${user?.email}`;
         const testsRes = await fetch(url);
         if (testsRes.ok) setTestResults(await testsRes.json());
 
         // 3. Fetch Interview Sessions
-        const intRes = await fetch('http://127.0.0.1:5000/api/admin/interview-sessions');
+        const intRes = await fetch(`${import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000'}/api/admin/interview-sessions`);
         if (intRes.ok) {
           const data = await intRes.json();
           setInterviewSessions(isAdmin ? data : data.filter(s => s.userEmail === user?.email));
         }
 
         // 4. Fetch Resumes
-        const resRes = await fetch('http://127.0.0.1:5000/api/admin/users');
+        const resRes = await fetch(`${import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000'}/api/admin/users`);
         if (resRes.ok) {
           const data = await resRes.json();
           setResumes(isAdmin ? data : data.filter(r => r.userEmail === user?.email));

@@ -49,7 +49,7 @@ export default function ResumeUploader({ onUpload }) {
                     formData.append('email', user.email);
                 }
                 
-                const response = await fetch('http://127.0.0.1:5000/api/extract-resume', {
+                const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000'}/api/extract-resume`, {
                     method: 'POST',
                     body: formData
                 });

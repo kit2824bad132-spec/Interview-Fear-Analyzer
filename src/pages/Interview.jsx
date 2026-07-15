@@ -82,7 +82,7 @@ const Interview = () => {
         const role = aiData.role || "Software Engineer";
         const skills = aiData.skills || ["React", "Problem Solving"];
         
-        const res = await fetch('http://127.0.0.1:5000/api/generate-questions', {
+        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000'}/api/generate-questions`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ role, skills, email: user?.email })
@@ -319,7 +319,7 @@ const Interview = () => {
     try {
       const aiData = JSON.parse(localStorage.getItem('ifa_resume_data') || '{}');
       const role = aiData.role || 'Software Engineer';
-      const response = await fetch('http://127.0.0.1:5000/api/analyze-interview', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000'}/api/analyze-interview`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -344,7 +344,7 @@ const Interview = () => {
           formData.append('video', videoBlob, 'video.webm');
         }
 
-        await fetch('http://127.0.0.1:5000/api/interview-session/save', {
+        await fetch(`${import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000'}/api/interview-session/save`, {
           method: 'POST',
           body: formData
         });
