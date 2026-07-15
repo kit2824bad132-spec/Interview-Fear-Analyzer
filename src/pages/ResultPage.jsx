@@ -9,38 +9,32 @@ export default function ResultPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  if (!state) return <div className="text-center mt-20 text-gray-400">No results found. <button onClick={() => navigate('/home')} className="underline">Go Home</button></div>;
-  const { answers, questions, terminated, timeTaken, interviewFeedback, type, tabSwitches } = state;
-  const isInterview = type === 'interview';
-
-  // Heuristic grading for text and code
-  const gradeTextOrCode = (userAns, correctAns) => {
-    if (!userAns || !userAns.trim()) return false;
-    if (!correctAns) return false;
-    
-    const uText = userAns.toLowerCase();
-    const cText = correctAns.toLowerCase();
-    if (uText === cText) return true;
-    
-    const uWords = uText.split(/\\W+/).filter(w => w.length > 1);
-    const cWords = cText.split(/\\W+/).filter(w => w.length > 3); // focus on significant words
-    
-    if (cWords.length === 0) return uText.length > 5;
-    
-    let matches = 0;
-    for (const cw of cWords) {
-      if (uWords.includes(cw) || uText.includes(cw)) matches++;
-    }
-    return (matches / cWords.length) >= 0.4;
-  };
-
   const savedRef = useRef(false);
 
   // Save result for admin view — split by question type for topic-wise tables
   useEffect(() => {
     if (state && user && !savedRef.current) {
       savedRef.current = true;
+      const { answers, questions, timeTaken, interviewFeedback, type, tabSwitches } = state;
+      const isInterview = type === 'interview';
       const resultsToSave = [];
+
+      // Heuristic grading for text and code (inlined for useEffect)
+      const gradeTextOrCode = (userAns, correctAns) => {
+        if (!userAns || !userAns.trim()) return false;
+        if (!correctAns) return false;
+        const uText = userAns.toLowerCase();
+        const cText = correctAns.toLowerCase();
+        if (uText === cText) return true;
+        const uWords = uText.split(/\\W+/).filter(w => w.length > 1);
+        const cWords = cText.split(/\\W+/).filter(w => w.length > 3);
+        if (cWords.length === 0) return uText.length > 5;
+        let matches = 0;
+        for (const cw of cWords) {
+          if (uWords.includes(cw) || uText.includes(cw)) matches++;
+        }
+        return (matches / cWords.length) >= 0.4;
+      };
 
       if (isInterview) {
         // Interview results saved as single entry
@@ -110,7 +104,34 @@ export default function ResultPage() {
       .then(data => console.log('Saved results to DB:', data))
       .catch(err => console.error('Error saving results:', err));
     }
-  }, [state, user, isInterview, interviewFeedback, questions, answers, timeTaken, tabSwitches]);
+  }, [state, user]);
+
+  if (!state) return <div className="text-center mt-20 text-gray-400">No results found. <button onClick={() => navigate('/home')} className="underline">Go Home</button></div>;
+  const { answers, questions, terminated, timeTaken, interviewFeedback, type, tabSwitches } = state;
+  const isInterview = type === 'interview';
+
+  // Heuristic grading for text and code
+  const gradeTextOrCode = (userAns, correctAns) => {
+    if (!userAns || !userAns.trim()) return false;
+    if (!correctAns) return false;
+    
+    const uText = userAns.toLowerCase();
+    const cText = correctAns.toLowerCase();
+    if (uText === cText) return true;
+    
+    const uWords = uText.split(/\\W+/).filter(w => w.length > 1);
+    const cWords = cText.split(/\\W+/).filter(w => w.length > 3); // focus on significant words
+    
+    if (cWords.length === 0) return uText.length > 5;
+    
+    let matches = 0;
+    for (const cw of cWords) {
+      if (uWords.includes(cw) || uText.includes(cw)) matches++;
+    }
+    return (matches / cWords.length) >= 0.4;
+  };
+
+
 
   // Score calculation for ALL questions
   let correct = 0, wrong = 0, skipped = 0;

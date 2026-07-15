@@ -19,7 +19,10 @@ export default function TestPage() {
   const [tabWarning, setTabWarning] = useState(0);
   const [toast, setToast] = useState(null);
   const tabSwitches = useRef(0);
-  const testStartTime = useRef(Date.now());
+  const testStartTime = useRef(null);
+  useEffect(() => {
+    testStartTime.current = Date.now();
+  }, []);
   const webcamRef = useRef(null);
   const wsRef = useRef(null);
   const { user } = useAuth();
@@ -35,7 +38,25 @@ export default function TestPage() {
     setTimeLeft(timerForQ);
     setSelected(null);
     setTextAnswer('');
-  }, [current]);
+  }, [current, timerForQ]);
+
+  const showToast = (msg, type) => {
+    setToast({ msg, type });
+    setTimeout(() => setToast(null), 4000);
+  };
+
+  const handleNext = (auto = false) => {
+    const userAnswer = isMCQ ? (auto && selected === null ? -1 : selected)
+      : (auto && !textAnswer.trim() ? '' : textAnswer.trim());
+    const newAnswers = { ...answers, [current]: userAnswer };
+    setAnswers(newAnswers);
+    if (current >= questions.length - 1) {
+      const elapsed = Math.round((Date.now() - testStartTime.current) / 1000);
+      navigate('/result', { state: { answers: newAnswers, questions, terminated: false, timeTaken: elapsed, tabSwitches: tabSwitches.current } });
+    } else {
+      setCurrent(c => c + 1);
+    }
+  };
 
   // Countdown timer
   useEffect(() => {
@@ -50,7 +71,7 @@ export default function TestPage() {
       });
     }, 1000);
     return () => clearInterval(t);
-  }, [current, tabWarning, timeLeft]);
+  }, [current, tabWarning, timeLeft, timerForQ, handleNext]);
 
   // Live Proctoring WebSocket
   useEffect(() => {
@@ -109,23 +130,7 @@ export default function TestPage() {
     };
   }, [answers, questions, navigate]);
 
-  const showToast = (msg, type) => {
-    setToast({ msg, type });
-    setTimeout(() => setToast(null), 4000);
-  };
 
-  const handleNext = (auto = false) => {
-    const userAnswer = isMCQ ? (auto && selected === null ? -1 : selected)
-      : (auto && !textAnswer.trim() ? '' : textAnswer.trim());
-    const newAnswers = { ...answers, [current]: userAnswer };
-    setAnswers(newAnswers);
-    if (current >= questions.length - 1) {
-      const elapsed = Math.round((Date.now() - testStartTime.current) / 1000);
-      navigate('/result', { state: { answers: newAnswers, questions, terminated: false, timeTaken: elapsed, tabSwitches: tabSwitches.current } });
-    } else {
-      setCurrent(c => c + 1);
-    }
-  };
 
   if (questions.length === 0) {
     return (
