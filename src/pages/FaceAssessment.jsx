@@ -106,7 +106,7 @@ export default function FaceAssessment() {
   }, [stepIndex, stream]);
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] flex flex-col items-center justify-center p-6 text-white overflow-hidden">
+    <div className="min-h-screen transition-colors duration-300 bg-[#0a0a0a] flex flex-col items-center justify-center p-6 text-white overflow-hidden">
       <div className="w-full max-w-3xl space-y-8 relative z-10">
         
         {/* Header */}
@@ -175,7 +175,7 @@ export default function FaceAssessment() {
         <div className="bg-gray-900/50 backdrop-blur-xl border border-gray-800 rounded-2xl p-6">
           <div className="flex justify-between items-end mb-4">
             <div>
-              <p className="text-xs text-gray-500 mb-1 uppercase tracking-wider font-semibold">Current Step</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider font-semibold">Current Step</p>
               <h3 className="text-xl font-medium text-white transition-all">
                  {isCompleted ? "All steps verified" : STEPS[stepIndex]?.label}
               </h3>

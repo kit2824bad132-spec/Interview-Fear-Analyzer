@@ -11,7 +11,7 @@ export default function LandingPage() {
   const [activeModal, setActiveModal] = useState(null); // 'login' or 'register' or null
 
   return (
-    <div className="min-h-screen bg-white flex flex-col items-center justify-center relative overflow-hidden">
+    <div className="min-h-screen transition-colors duration-300 bg-white dark:bg-gray-800 flex flex-col items-center justify-center relative overflow-hidden">
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
@@ -23,8 +23,8 @@ export default function LandingPage() {
             <BrainCircuit className="w-10 h-10 text-white" />
           </div>
         </div>
-        <h1 className="text-5xl font-extrabold text-black mb-3 tracking-tight">Interview Fear Analyzer</h1>
-        <p className="text-gray-500 text-lg mb-10">AI-powered Interview &amp; Test System with real-time anti-cheat monitoring.</p>
+        <h1 className="text-5xl font-extrabold text-black dark:text-white mb-3 tracking-tight">Interview Fear Analyzer</h1>
+        <p className="text-gray-500 dark:text-gray-400 text-lg mb-10">AI-powered Interview &amp; Test System with real-time anti-cheat monitoring.</p>
         
         <div className="flex gap-4 justify-center">
           <button
@@ -35,7 +35,7 @@ export default function LandingPage() {
           </button>
           <button
             onClick={() => setActiveModal('register')}
-            className="px-8 py-3.5 bg-white text-black border-2 border-black rounded-xl font-bold text-sm hover:bg-gray-50 transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+            className="px-8 py-3.5 bg-white dark:bg-gray-800 text-black dark:text-white border-2 border-black rounded-xl font-bold text-sm hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900 transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
           >
             Create Account
           </button>

@@ -20,8 +20,6 @@ const pageVariants = {
 export default function Dashboard() {
   const { user } = useAuth();
   const isAdmin = user?.role === 'admin';
-  const [isDark, setIsDark] = useState(false);
-  
   const [testResults, setTestResults] = useState([]);
   const [interviewSessions, setInterviewSessions] = useState([]);
   const [resumes, setResumes] = useState([]);
@@ -123,17 +121,9 @@ export default function Dashboard() {
     return { ...u, totalAttempts, lastScore, lastDate, problemsSolved, totalTimeSec, maxTabSwitches };
   });
 
-  const theme = {
-    bg: isDark ? 'bg-gray-900' : 'bg-gray-50',
-    card: isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100',
-    text: isDark ? 'text-white' : 'text-gray-900',
-    textMuted: isDark ? 'text-gray-400' : 'text-gray-500',
-    accent: isDark ? '#3B82F6' : '#2563EB', // Blue
-    chartGrid: isDark ? '#374151' : '#E5E7EB'
-  };
-
+  
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${theme.bg}`}>
+    <div className={`min-h-screen transition-colors duration-300 bg-gray-50 dark:bg-gray-900`}>
       <motion.div
         variants={pageVariants}
         initial="initial"
@@ -145,23 +135,17 @@ export default function Dashboard() {
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
           <div className="flex items-center gap-4">
-            <div className={`p-3 rounded-2xl ${isDark ? 'bg-blue-500/20 text-blue-400' : 'bg-blue-100 text-blue-600'}`}>
+            <div className={`p-3 rounded-2xl bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400`}>
               <LayoutDashboard className="w-8 h-8" />
             </div>
             <div>
-              <h1 className={`text-3xl font-extrabold ${theme.text}`}>Analytics Dashboard</h1>
-              <p className={theme.textMuted}>{isAdmin ? 'Platform-wide performance & engagement metrics' : 'Your personal career growth & assessment analytics'}</p>
+              <h1 className={`text-3xl font-extrabold text-gray-900 dark:text-white`}>Analytics Dashboard</h1>
+              <p className="text-gray-500 dark:text-gray-400">{isAdmin ? 'Platform-wide performance & engagement metrics' : 'Your personal career growth & assessment analytics'}</p>
             </div>
           </div>
           
           <div className="flex items-center gap-4">
-            <button 
-              onClick={() => setIsDark(!isDark)} 
-              className={`p-2.5 rounded-full border shadow-sm transition-colors ${theme.card} ${theme.text}`}
-            >
-              {isDark ? <Sun className="w-5 h-5 text-yellow-400" /> : <Moon className="w-5 h-5 text-gray-600" />}
-            </button>
-            <div className={`px-4 py-2 rounded-xl text-sm font-bold tracking-wide uppercase ${isAdmin ? 'bg-purple-100 text-purple-700 border border-purple-200' : 'bg-blue-100 text-blue-700 border border-blue-200'}`}>
+<div className={`px-4 py-2 rounded-xl text-sm font-bold tracking-wide uppercase ${isAdmin ? 'bg-purple-100 text-purple-700 border border-purple-200' : 'bg-blue-100 text-blue-700 border border-blue-200'}`}>
               {isAdmin ? 'Admin View' : 'User View'}
             </div>
           </div>
@@ -178,14 +162,14 @@ export default function Dashboard() {
             <motion.div 
               key={idx}
               whileHover={{ y: -4 }}
-              className={`p-6 rounded-3xl border shadow-sm ${theme.card} flex items-center gap-5`}
+              className={`p-6 rounded-3xl border shadow-sm bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700 flex items-center gap-5`}
             >
               <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 ${kpi.bg} ${kpi.color}`}>
                 <kpi.icon className="w-7 h-7" />
               </div>
               <div>
-                <p className={`text-sm font-semibold mb-1 ${theme.textMuted}`}>{kpi.label}</p>
-                <p className={`text-3xl font-extrabold ${theme.text}`}>{kpi.value}</p>
+                <p className={`text-sm font-semibold mb-1 text-gray-500 dark:text-gray-400`}>{kpi.label}</p>
+                <p className={`text-3xl font-extrabold text-gray-900 dark:text-white`}>{kpi.value}</p>
               </div>
             </motion.div>
           ))}
@@ -193,32 +177,32 @@ export default function Dashboard() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
           {/* Main Chart - Score Trend */}
-          <div className={`lg:col-span-2 p-6 rounded-3xl border shadow-sm ${theme.card}`}>
+          <div className={`lg:col-span-2 p-6 rounded-3xl border shadow-sm bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700`}>
             <div className="flex items-center justify-between mb-6">
-              <h2 className={`text-xl font-bold ${theme.text} flex items-center gap-2`}>
+              <h2 className={`text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2`}>
                 <TrendingUp className="w-5 h-5 text-blue-500" /> Assessment Score Trend
               </h2>
             </div>
             {trendData.length === 0 ? (
-              <div className={`h-[300px] flex items-center justify-center ${theme.textMuted}`}>Not enough data to display trend</div>
+              <div className={`h-[300px] flex items-center justify-center text-gray-500 dark:text-gray-400`}>Not enough data to display trend</div>
             ) : (
               <div className="h-[300px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={trendData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                     <defs>
                       <linearGradient id="colorScore" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor={theme.accent} stopOpacity={0.3}/>
-                        <stop offset="95%" stopColor={theme.accent} stopOpacity={0}/>
+                        <stop offset="5%" stopColor={'#2563EB'} stopOpacity={0.3}/>
+                        <stop offset="95%" stopColor={'#2563EB'} stopOpacity={0}/>
                       </linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={theme.chartGrid} />
-                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: theme.textMuted, fontSize: 12 }} dy={10} />
-                    <YAxis axisLine={false} tickLine={false} tick={{ fill: theme.textMuted, fontSize: 12 }} />
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={'#E5E7EB'} />
+                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#6B7280', fontSize: 12 }} dy={10} />
+                    <YAxis axisLine={false} tickLine={false} tick={{ fill: '#6B7280', fontSize: 12 }} />
                     <Tooltip 
-                      contentStyle={{ backgroundColor: isDark ? '#1F2937' : '#FFFFFF', borderColor: isDark ? '#374151' : '#E5E7EB', borderRadius: '12px', color: theme.text }}
-                      itemStyle={{ color: theme.accent, fontWeight: 'bold' }}
+                      contentStyle={{ backgroundColor: '#FFFFFF', borderColor: '#E5E7EB', borderRadius: '12px', color: '#111827' }}
+                      itemStyle={{ color: '#2563EB', fontWeight: 'bold' }}
                     />
-                    <Area type="monotone" dataKey="score" stroke={theme.accent} strokeWidth={3} fillOpacity={1} fill="url(#colorScore)" />
+                    <Area type="monotone" dataKey="score" stroke={'#2563EB'} strokeWidth={3} fillOpacity={1} fill="url(#colorScore)" />
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
@@ -226,22 +210,22 @@ export default function Dashboard() {
           </div>
 
           {/* Secondary Chart - Skills Distribution */}
-          <div className={`p-6 rounded-3xl border shadow-sm ${theme.card}`}>
-            <h2 className={`text-xl font-bold mb-6 ${theme.text} flex items-center gap-2`}>
+          <div className={`p-6 rounded-3xl border shadow-sm bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700`}>
+            <h2 className={`text-xl font-bold mb-6 text-gray-900 dark:text-white flex items-center gap-2`}>
               <BrainCircuit className="w-5 h-5 text-purple-500" /> Skill Proficiency
             </h2>
             <div className="h-[300px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={skillsData} layout="vertical" margin={{ top: 0, right: 48, left: 0, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke={theme.chartGrid} />
+                  <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke={'#E5E7EB'} />
                   <XAxis type="number" domain={[0, 100]} hide />
-                  <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} tick={{ fill: theme.textMuted, fontSize: 12 }} width={100} />
+                  <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} tick={{ fill: '#6B7280', fontSize: 12 }} width={100} />
                   <Tooltip 
-                    cursor={{ fill: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }} 
-                    contentStyle={{ backgroundColor: isDark ? '#1F2937' : '#FFFFFF', borderColor: isDark ? '#374151' : '#E5E7EB', borderRadius: '12px', color: theme.text }}
+                    cursor={{ fill: 'rgba(0,0,0,0.05)' }} 
+                    contentStyle={{ backgroundColor: '#FFFFFF', borderColor: '#E5E7EB', borderRadius: '12px', color: '#111827' }}
                     formatter={(value) => [value + '%', 'Score']}
                   />
-                  <Bar dataKey="value" radius={[0, 4, 4, 0]} barSize={24} label={{ position: 'right', fill: isDark ? '#9CA3AF' : '#6B7280', fontSize: 12, fontWeight: 'bold', formatter: (val) => val + '%' }}>
+                  <Bar dataKey="value" radius={[0, 4, 4, 0]} barSize={24} label={{ position: 'right', fill: '#6B7280', fontSize: 12, fontWeight: 'bold', formatter: (val) => val + '%' }}>
                     {skillsData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={['#3B82F6', '#8B5CF6', '#10B981', '#F59E0B'][index % 4]} />
                     ))}
@@ -254,18 +238,18 @@ export default function Dashboard() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Recent Assessments Table */}
-          <div className={`lg:col-span-2 p-6 rounded-3xl border shadow-sm overflow-hidden ${theme.card}`}>
+          <div className={`lg:col-span-2 p-6 rounded-3xl border shadow-sm overflow-hidden bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700`}>
             <div className="flex items-center justify-between mb-6">
-              <h2 className={`text-xl font-bold ${theme.text}`}>Recent Activity</h2>
+              <h2 className={`text-xl font-bold text-gray-900 dark:text-white`}>Recent Activity</h2>
             </div>
             
             {recentAssessments.length === 0 ? (
-              <div className={`text-center py-12 ${theme.textMuted}`}>No assessments found.</div>
+              <div className={`text-center py-12 text-gray-500 dark:text-gray-400`}>No assessments found.</div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className={`border-b ${isDark ? 'border-gray-700' : 'border-gray-100'} ${theme.textMuted} text-xs uppercase tracking-wider`}>
+                    <tr className={`border-b border-gray-100 dark:border-gray-700 text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider`}>
                       <th className="pb-4 font-bold">User</th>
                       <th className="pb-4 font-bold">Type</th>
                       <th className="pb-4 font-bold">Score</th>
@@ -279,13 +263,13 @@ export default function Dashboard() {
                       const date = isInterview ? item.completedAt : item.timestamp;
                       
                       return (
-                        <tr key={idx} className={`group hover:${isDark ? 'bg-gray-800/50' : 'bg-gray-50'} transition-colors`}>
+                        <tr key={idx} className={`group hover:bg-gray-50 dark:bg-gray-800/50 transition-colors`}>
                           <td className="py-4">
                             <div className="flex items-center gap-3">
-                              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${isDark ? 'bg-gray-700 text-white' : 'bg-gray-200 text-gray-700'}`}>
+                              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-white`}>
                                 {(item.userEmail || 'A')[0].toUpperCase()}
                               </div>
-                              <span className={`font-medium ${theme.text} text-sm`}>{item.userEmail}</span>
+                              <span className={`font-medium text-gray-900 dark:text-white text-sm`}>{item.userEmail}</span>
                             </div>
                           </td>
                           <td className="py-4">
@@ -299,7 +283,7 @@ export default function Dashboard() {
                             </span>
                           </td>
                           <td className="py-4">
-                            <span className={`text-sm ${theme.textMuted}`}>
+                            <span className={`text-sm text-gray-500 dark:text-gray-400`}>
                               {new Date(date).toLocaleDateString()}
                             </span>
                           </td>
@@ -313,33 +297,33 @@ export default function Dashboard() {
           </div>
 
           {/* AI Insights Card */}
-          <div className={`p-6 rounded-3xl border shadow-sm ${theme.card} flex flex-col`}>
+          <div className={`p-6 rounded-3xl border shadow-sm bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700 flex flex-col`}>
             <div className="flex items-center gap-2 mb-6">
               <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center">
                 <BrainCircuit className="w-4 h-4 text-white" />
               </div>
-              <h2 className={`text-xl font-bold ${theme.text}`}>AI Insights</h2>
+              <h2 className={`text-xl font-bold text-gray-900 dark:text-white`}>AI Insights</h2>
             </div>
             
             <div className="space-y-4 flex-1">
-              <div className={`p-4 rounded-2xl ${isDark ? 'bg-gray-700/50' : 'bg-blue-50'} border ${isDark ? 'border-gray-600' : 'border-blue-100'}`}>
+              <div className="p-4 rounded-2xl bg-blue-50 dark:bg-gray-700/50 border border-blue-100 dark:border-gray-600">
                 <div className="flex gap-3">
                   <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
                   <div>
-                    <h3 className={`text-sm font-bold mb-1 ${theme.text}`}>Strong Fundamentals</h3>
-                    <p className={`text-xs leading-relaxed ${theme.textMuted}`}>
+                    <h3 className={`text-sm font-bold mb-1 text-gray-900 dark:text-white`}>Strong Fundamentals</h3>
+                    <p className={`text-xs leading-relaxed text-gray-500 dark:text-gray-400`}>
                       {isAdmin ? 'Users are scoring consistently high in Problem Solving sections.' : 'Your Problem Solving scores have increased by 15% over the last 3 assessments.'}
                     </p>
                   </div>
                 </div>
               </div>
 
-              <div className={`p-4 rounded-2xl ${isDark ? 'bg-gray-700/50' : 'bg-amber-50'} border ${isDark ? 'border-gray-600' : 'border-amber-100'}`}>
+              <div className="p-4 rounded-2xl bg-amber-50 dark:bg-gray-700/50 border border-amber-100 dark:border-gray-600">
                 <div className="flex gap-3">
                   <AlertTriangle className="w-5 h-5 text-amber-500 shrink-0" />
                   <div>
-                    <h3 className={`text-sm font-bold mb-1 ${theme.text}`}>Area of Improvement</h3>
-                    <p className={`text-xs leading-relaxed ${theme.textMuted}`}>
+                    <h3 className={`text-sm font-bold mb-1 text-gray-900 dark:text-white`}>Area of Improvement</h3>
+                    <p className={`text-xs leading-relaxed text-gray-500 dark:text-gray-400`}>
                       {isAdmin ? 'System design and behavioral clarity scores remain below the 70% threshold.' : 'Your interview clarity score is at 60%. Consider practicing more mock interviews.'}
                     </p>
                   </div>
@@ -358,26 +342,26 @@ export default function Dashboard() {
 
         {/* Registered Users Table — Admin Only */}
         {isAdmin && (
-          <div className={`mt-8 p-6 rounded-3xl border shadow-sm ${theme.card}`}>
+          <div className={`mt-8 p-6 rounded-3xl border shadow-sm bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700`}>
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
-                <div className={`p-2 rounded-xl ${isDark ? 'bg-purple-500/20' : 'bg-purple-100'}`}>
-                  <Users className="w-5 h-5 text-purple-600" />
+                <div className="p-2 rounded-xl bg-purple-100 dark:bg-purple-500/20">
+                  <Users className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                 </div>
                 <div>
-                  <h2 className={`text-xl font-bold ${theme.text}`}>Registered Users</h2>
-                  <p className={`text-xs ${theme.textMuted}`}>{allUsers.length} user(s) registered on the platform</p>
+                  <h2 className={`text-xl font-bold text-gray-900 dark:text-white`}>Registered Users</h2>
+                  <p className={`text-xs text-gray-500 dark:text-gray-400`}>{allUsers.length} user(s) registered on the platform</p>
                 </div>
               </div>
             </div>
 
             {allUsers.length === 0 ? (
-              <div className={`text-center py-12 ${theme.textMuted}`}>No users registered yet.</div>
+              <div className={`text-center py-12 text-gray-500 dark:text-gray-400`}>No users registered yet.</div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className={`border-b ${isDark ? 'border-gray-700' : 'border-gray-100'} ${theme.textMuted} text-xs uppercase tracking-wider`}>
+                    <tr className={`border-b border-gray-100 dark:border-gray-700 text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider`}>
                       <th className="pb-4 font-bold">User</th>
                       <th className="pb-4 font-bold">Email</th>
                       <th className="pb-4 font-bold text-center">Total Assessments</th>
@@ -391,48 +375,48 @@ export default function Dashboard() {
                   </thead>
                   <tbody>
                     {perUserStats.map((u, idx) => (
-                      <tr key={idx} className={`border-b ${isDark ? 'border-gray-700/50 hover:bg-gray-700/30' : 'border-gray-50 hover:bg-gray-50'} transition-colors`}>
+                      <tr key={idx} className="border-b border-gray-50 dark:border-gray-700/50 hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors">
                         {/* Avatar + Name */}
                         <td className="py-4">
                           <div className="flex items-center gap-3">
-                            <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold ${isDark ? 'bg-indigo-900 text-indigo-300' : 'bg-indigo-100 text-indigo-700'}`}>
+                            <div className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300">
                               {(u.name || u.email)[0].toUpperCase()}
                             </div>
-                            <span className={`font-semibold ${theme.text}`}>{u.name || '—'}</span>
+                            <span className={`font-semibold text-gray-900 dark:text-white`}>{u.name || '—'}</span>
                           </div>
                         </td>
                         {/* Email */}
-                        <td className={`py-4 text-sm ${theme.textMuted}`}>{u.email}</td>
+                        <td className={`py-4 text-sm text-gray-500 dark:text-gray-400`}>{u.email}</td>
                         {/* Total Assessments */}
                         <td className="py-4 text-center">
-                          <span className={`inline-flex items-center justify-center w-8 h-8 rounded-full font-bold text-sm ${u.totalAttempts > 0 ? (isDark ? 'bg-blue-900 text-blue-300' : 'bg-blue-100 text-blue-700') : (isDark ? 'bg-gray-700 text-gray-400' : 'bg-gray-100 text-gray-400')}`}>
+                          <span className={`inline-flex items-center justify-center w-8 h-8 rounded-full font-bold text-sm ${u.totalAttempts > 0 ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300' : 'bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-400'}`}>
                             {u.totalAttempts}
                           </span>
                         </td>
                         {/* Problems Solved */}
                         <td className="py-4 text-center">
-                          <span className={`inline-flex items-center gap-1 font-bold text-sm ${u.problemsSolved > 0 ? 'text-emerald-600' : (isDark ? 'text-gray-500' : 'text-gray-400')}`}>
+                          <span className={`inline-flex items-center gap-1 font-bold text-sm ${u.problemsSolved > 0 ? 'text-emerald-600' : 'text-gray-400 dark:text-gray-500'}`}>
                             ✅ {u.problemsSolved}
                           </span>
                         </td>
                         {/* Total Time (seconds) */}
                         <td className="py-4 text-center">
                           {u.totalTimeSec > 0 ? (
-                            <span className={`text-sm font-semibold ${isDark ? 'text-blue-300' : 'text-blue-600'}`}>
+                            <span className="text-sm font-semibold text-blue-600 dark:text-blue-300">
                               {u.totalTimeSec}s
                             </span>
                           ) : (
-                            <span className={`text-sm ${theme.textMuted}`}>—</span>
+                            <span className={`text-sm text-gray-500 dark:text-gray-400`}>—</span>
                           )}
                         </td>
                         {/* Tab Switches */}
                         <td className="py-4 text-center">
                           <span className={`inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-bold ${
                             u.maxTabSwitches === 0
-                              ? (isDark ? 'bg-gray-700 text-gray-400' : 'bg-gray-100 text-gray-400')
+                              ? 'bg-gray-100 dark:bg-gray-700 text-gray-400'
                               : u.maxTabSwitches === 1
-                              ? (isDark ? 'bg-yellow-900 text-yellow-300' : 'bg-yellow-100 text-yellow-700')
-                              : (isDark ? 'bg-red-900 text-red-300' : 'bg-red-100 text-red-600')
+                              ? 'bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300'
+                              : 'bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-300'
                           }`}>
                             {u.maxTabSwitches === 0 ? 'None' : `${u.maxTabSwitches}x`}
                           </span>
@@ -444,16 +428,16 @@ export default function Dashboard() {
                               {u.lastScore}%
                             </span>
                           ) : (
-                            <span className={`text-sm ${theme.textMuted}`}>No attempt</span>
+                            <span className={`text-sm text-gray-500 dark:text-gray-400`}>No attempt</span>
                           )}
                         </td>
                         {/* Last Active */}
-                        <td className={`py-4 text-sm ${theme.textMuted}`}>
+                        <td className={`py-4 text-sm text-gray-500 dark:text-gray-400`}>
                           {u.lastDate ? new Date(u.lastDate).toLocaleDateString() : '—'}
                         </td>
                         {/* Status */}
                         <td className="py-4 text-center">
-                          <span className={`text-xs font-bold px-3 py-1 rounded-full ${u.totalAttempts > 0 ? (isDark ? 'bg-green-900 text-green-300' : 'bg-green-100 text-green-700') : (isDark ? 'bg-gray-700 text-gray-400' : 'bg-gray-100 text-gray-500')}`}>
+                          <span className={`text-xs font-bold px-3 py-1 rounded-full ${u.totalAttempts > 0 ? 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300' : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400'}`}>
                             {u.totalAttempts > 0 ? 'Active' : 'Not started'}
                           </span>
                         </td>

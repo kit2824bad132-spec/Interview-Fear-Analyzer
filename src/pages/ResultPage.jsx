@@ -170,17 +170,17 @@ export default function ResultPage() {
       )}
 
       {/* Score card */}
-      <div className="bg-gray-50 border border-gray-100 rounded-3xl p-8 text-center mb-6">
+      <div className="bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-3xl p-8 text-center mb-6">
         <div className="flex justify-center mb-4">
           <div className="w-20 h-20 bg-black rounded-full flex items-center justify-center relative shadow-[0_0_20px_rgba(0,0,0,0.2)]">
             <Trophy className="w-10 h-10 text-white" />
           </div>
         </div>
-        <h1 className="text-5xl font-extrabold text-black mb-1">
+        <h1 className="text-5xl font-extrabold text-black dark:text-white mb-1">
           {isInterview ? `${interviewFeedback?.scores?.total}%` : `${pct}%`}
         </h1>
-        <p className="text-gray-500 text-sm mb-2">{isInterview ? 'Behavioral Performance Score' : 'Score based on MCQ questions'}</p>
-        <p className="text-base font-medium text-gray-700 mb-6 px-4">
+        <p className="text-gray-500 dark:text-gray-400 text-sm mb-2">{isInterview ? 'Behavioral Performance Score' : 'Score based on MCQ questions'}</p>
+        <p className="text-base font-medium text-gray-700 dark:text-gray-300 mb-6 px-4">
           {isInterview ? interviewFeedback?.summary : (pct >= 70 ? '🎉 Great job!' : pct >= 40 ? '👍 Good effort!' : '💪 Keep practicing!')}
         </p>
 
@@ -205,7 +205,7 @@ export default function ResultPage() {
         ) : (
           <div className="grid grid-cols-4 gap-3">
             {[
-              { label: 'Total Questions', value: total, color: 'bg-gray-100 text-gray-800' },
+              { label: 'Total Questions', value: total, color: 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100' },
               { label: 'Correct', value: correct, color: 'bg-green-50 text-green-700' },
               { label: 'Wrong', value: wrong, color: 'bg-red-50 text-red-700' },
               { label: 'Skipped', value: skipped, color: 'bg-yellow-50 text-yellow-700' },
@@ -251,8 +251,8 @@ export default function ResultPage() {
       )}
 
       {/* Breakdown */}
-      <div className="bg-gray-50 border border-gray-100 rounded-2xl p-6 flex flex-col gap-3 mb-6">
-        <h2 className="font-bold text-gray-800 mb-1">Question Breakdown</h2>
+      <div className="bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-2xl p-6 flex flex-col gap-3 mb-6">
+        <h2 className="font-bold text-gray-800 dark:text-gray-100 mb-1">Question Breakdown</h2>
         {questions.map((q, i) => {
           const userAns = answers[i];
           const qType = q.type || 'mcq';
@@ -272,10 +272,10 @@ export default function ResultPage() {
               </span>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-0.5">
-                  <span className={`flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${qType === 'code' ? 'bg-purple-100 text-purple-700' : qType === 'text' ? 'bg-blue-100 text-blue-700' : qType === 'interview' ? 'bg-indigo-100 text-indigo-700' : 'bg-gray-100 text-gray-600'}`}>
+                  <span className={`flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${qType === 'code' ? 'bg-purple-100 text-purple-700' : qType === 'text' ? 'bg-blue-100 text-blue-700' : qType === 'interview' ? 'bg-indigo-100 text-indigo-700' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'}`}>
                     {TYPE_ICON[qType]}{qType.toUpperCase()}
                   </span>
-                  <p className="text-sm font-medium text-gray-800 truncate flex-1">{q.text}</p>
+                  <p className="text-sm font-medium text-gray-800 dark:text-gray-100 truncate flex-1">{q.text}</p>
                 </div>
                 {isInterviewResponse ? (
                   <div className="mt-2 text-xs text-indigo-700 bg-indigo-50/50 p-2 rounded-lg border border-indigo-100">
@@ -283,16 +283,16 @@ export default function ResultPage() {
                     <p className="italic leading-relaxed">"{userAns || "No response recorded."}"</p>
                   </div>
                 ) : isMCQ ? (
-                  <p className="text-xs text-gray-500 mt-0.5">
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
                     Your answer: <span className={isCorrect ? 'text-green-700 font-semibold' : 'text-red-600 font-semibold'}>
                       {skippedQ ? 'Skipped' : (q.options || [])[userAns] || '?'}
                     </span>
                     {!isCorrect && !skippedQ && <span className="text-gray-400"> · Correct: <span className="text-green-700 font-semibold">{(q.options || [])[q.correct]}</span></span>}
                   </p>
                 ) : (
-                  <div className="text-xs text-gray-500 mt-1">
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                     {userAns ? (
-                      <p className={`mt-1 bg-white rounded px-3 py-2 font-mono border ${isCorrect ? 'border-green-200 text-green-800' : 'border-red-200 text-red-800'} max-h-24 overflow-y-auto whitespace-pre-wrap`}>
+                      <p className={`mt-1 bg-white dark:bg-gray-800 rounded px-3 py-2 font-mono border ${isCorrect ? 'border-green-200 text-green-800' : 'border-red-200 text-red-800'} max-h-24 overflow-y-auto whitespace-pre-wrap`}>
                         {userAns}
                       </p>
                     ) : (
@@ -313,7 +313,7 @@ export default function ResultPage() {
       </div>
 
       <div className="flex gap-3">
-        <button onClick={() => navigate('/home')} className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border border-gray-200 text-gray-700 text-sm font-semibold hover:bg-gray-50 transition-colors cursor-pointer">
+        <button onClick={() => navigate('/home')} className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 text-sm font-semibold hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900 transition-colors cursor-pointer">
           <Home className="w-4 h-4" /> Home
         </button>
         <button onClick={() => navigate('/test')} className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-black text-white text-sm font-semibold hover:bg-gray-800 transition-colors cursor-pointer">

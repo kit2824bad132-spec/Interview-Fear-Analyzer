@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { AccessibilityProvider } from './context/AccessibilityContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Layout from './components/Layout';
 
@@ -55,11 +56,19 @@ function AppRoutes() {
 }
 
 function App() {
+  React.useEffect(() => {
+    if (localStorage.getItem('darkMode') === 'true') {
+      document.documentElement.classList.add('dark');
+    }
+  }, []);
+
   return (
     <BrowserRouter>
-      <AuthProvider>
-        <AppRoutes />
-      </AuthProvider>
+      <AccessibilityProvider>
+        <AuthProvider>
+          <AppRoutes />
+        </AuthProvider>
+      </AccessibilityProvider>
     </BrowserRouter>
   );
 }

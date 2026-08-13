@@ -444,6 +444,25 @@ export default function AdminPanel() {
               </span>
             </div>
 
+            {/* Adaptive Assessment Analytics Summary */}
+            <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl p-6 mb-8 text-white shadow-lg">
+              <h3 className="text-lg font-bold mb-4 flex items-center gap-2"><Monitor className="w-5 h-5"/> AI Adaptive Analytics</h3>
+              <div className="grid grid-cols-3 gap-6">
+                <div>
+                  <p className="text-3xl font-extrabold">{results.filter(r => r.percentage >= 70).length}</p>
+                  <p className="text-sm opacity-80 mt-1">Candidates Promoted (Hard Difficulty)</p>
+                </div>
+                <div>
+                  <p className="text-3xl font-extrabold">{results.filter(r => r.percentage < 40).length}</p>
+                  <p className="text-sm opacity-80 mt-1">Remedial Path (Easy Difficulty)</p>
+                </div>
+                <div>
+                  <p className="text-3xl font-extrabold">{results.length > 0 ? Math.round(results.reduce((a, b) => a + (b.percentage || 0), 0) / results.length) : 0}%</p>
+                  <p className="text-sm opacity-80 mt-1">Ecosystem Average Score</p>
+                </div>
+              </div>
+            </div>
+
             {results.length === 0 ? (
               <div className="text-center py-16 border-2 border-dashed border-gray-200 rounded-2xl text-gray-400">
                 <p className="text-4xl mb-3">📊</p>
@@ -747,19 +766,19 @@ export default function AdminPanel() {
 
                       {/* AI Summary */}
                       {session.analysis?.summary && (
-                        <div className="bg-white rounded-xl p-4 border border-gray-100">
+                        <div className="rounded-xl p-4 border bg-white border-gray-100 dark:bg-gray-800 dark:border-gray-700">
                           <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">AI Summary</p>
-                          <p className="text-sm text-gray-700 leading-relaxed">{session.analysis.summary}</p>
+                          <p className="text-sm leading-relaxed text-gray-700 dark:text-gray-300">{session.analysis.summary}</p>
                         </div>
                       )}
 
                       {/* Q&A Transcripts */}
-                      <div className="bg-white rounded-xl p-4 border border-gray-100">
+                      <div className="rounded-xl p-4 border bg-white border-gray-100 dark:bg-gray-800 dark:border-gray-700">
                         <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Transcribed Answers</p>
                         <div className="space-y-3">
                           {(session.questions || []).map((q, i) => (
-                            <div key={i} className="pb-3 border-b border-gray-50 last:border-0">
-                              <p className="font-semibold text-gray-800 text-sm mb-1">Q{i + 1}: {q}</p>
+                            <div key={i} className="pb-3 border-b last:border-0 border-gray-50 dark:border-gray-700">
+                              <p className="font-semibold text-sm mb-1 text-gray-800 dark:text-gray-200">Q{i + 1}: {q}</p>
                               <p className="text-sm text-gray-500 italic">"{session.answers?.[i] || 'No response'}"</p>
                             </div>
                           ))}
@@ -767,7 +786,7 @@ export default function AdminPanel() {
                       </div>
 
                       {/* Video */}
-                      <div className="bg-white rounded-xl p-4 border border-gray-100">
+                      <div className="rounded-xl p-4 border bg-white border-gray-100 dark:bg-gray-800 dark:border-gray-700">
                         <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Interview Recording</p>
                         {session.videoUrl ? (
                           <video

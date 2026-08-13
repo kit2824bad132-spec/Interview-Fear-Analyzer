@@ -4,7 +4,7 @@
 
 @layer base {
   body {
-    @apply bg-white text-black font-sans m-0 p-0 antialiased;
+    @apply bg-white text-black dark:bg-gray-900 dark:text-gray-100 font-sans m-0 p-0 antialiased transition-colors duration-300;
     min-height: 100vh;
   }
 }
@@ -22,3 +22,21 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #9ca3af;
 }
+
+/* Accessibility Modes */
+.high-contrast {
+  filter: contrast(1.5) saturate(1.2);
+  background-color: #000 !important;
+}
+.high-contrast * {
+  color: #fff !important;
+  border-color: #fff !important;
+}
+
+.text-large {
+  font-size: 1.25rem !important;
+}
+.text-large h1 { font-size: 2.5rem !important; }
+.text-large h2 { font-size: 2rem !important; }
+.text-large h3 { font-size: 1.75rem !important; }
+.text-large p, .text-large span, .text-large div { font-size: 1.25rem; }

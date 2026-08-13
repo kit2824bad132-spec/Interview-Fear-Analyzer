@@ -133,10 +133,16 @@ const InterviewSession = mongoose.model('InterviewSession', interviewSessionSche
 
 const multer = require('multer');
 const pdfParse = require('pdf-parse');
-const Groq = require('groq-sdk');
+const { OpenAI } = require('openai');
 
-const groq = new Groq({
-    apiKey: process.env.GROQ_API_KEY
+const ai = new OpenAI({ 
+    apiKey: process.env.GROQ_API_KEY, 
+    baseURL: 'https://api.groq.com/openai/v1' 
+});
+
+const { GoogleGenAI } = require('@google/genai');
+const geminiAi = new GoogleGenAI({ 
+    apiKey: process.env.GEMINI_API_KEY 
 });
 
 const path = require('path');
@@ -314,18 +320,21 @@ Respond ONLY with a valid JSON object in this exact structure:
 Do not include markdown code block syntax. Return raw JSON.
 Resume Text: ${resumeText.slice(0, 4000)}`;
 
-        const completion = await groq.chat.completions.create({
-            messages: [{ role: 'user', content: prompt }],
-            model: 'llama-3.3-70b-versatile',
-            max_tokens: 4000,
-            temperature: 0.5
+        const completion = await ai.chat.completions.create({
+            model: 'llama-3.1-8b-instant',
+            messages: [{ role: 'user', content: prompt }], response_format: { type: 'json_object' }
         });
         
         let resultStr = completion.choices[0].message.content;
         console.log("Stage 3: Parsing AI Response...");
         
         // Extract JSON specifically in case the LLM wrapped it in text
-        const jsonMatch = resultStr.match(/\{[\s\S]*\}/);
+        let cleanJson = resultStr.trim();
+        if (cleanJson.includes('```')) {
+            cleanJson = cleanJson.replace(/```json|```/g, '').trim();
+        }
+        
+        const jsonMatch = cleanJson.match(/\{[\s\S]*\}/);
         if (!jsonMatch) throw new Error("AI did not return a valid JSON object.");
         const resultJSON = JSON.parse(jsonMatch[0]);
 
@@ -366,28 +375,78 @@ app.post('/api/generate-questions', async (req, res) => {
             }
         }
         
-        const prompt = `You are an expert technical recruiter. Generate 5 highly relevant interview questions for a ${role} with skills: ${skills.join(', ')}.
-Mix Behavioral, Technical, and Situational questions.
-Respond ONLY with a valid JSON array in this exact structural format without markdown:
-[
-  { "id": 1, "category": "Behavioral", "text": "Question text here" },
-  { "id": 2, "category": "Technical", "text": "Question text here" }
-]`;
+        const prompt = `You are an expert technical recruiter. Generate exactly 25 UNIQUE, HIGHLY RANDOMIZED, and HIGHLY RELEVANT interview questions for a ${role} with skills: ${skills.join(', ')}.
+        
+To ensure randomness, pick random subsets of the provided skills, use random real-world scenarios, and avoid standard cliché questions. The questions should feel tailored and unpredictable.
 
-        const completion = await groq.chat.completions.create({
-            messages: [{ role: 'user', content: prompt }],
-            model: 'llama-3.3-70b-versatile',
-            temperature: 0.7,
+The questions MUST be distributed exactly as follows:
+- 5 HR Questions
+- 5 Behavioral Questions
+- 10 Technical Questions (based ONLY on the provided skills, pick random combinations of skills)
+- 5 Coding Questions
+- 5 Project-Based Questions
+
+CRITICAL RULES:
+- EVERY question must be completely unique and highly randomized. DO NOT repeat any questions from typical templates.
+- Ensure the questions match their assigned category exactly.
+- Respond ONLY with a valid JSON array. Do not include markdown code blocks.
+- Use current, up-to-date trends and random real-world scenarios from the web.
+
+Format Example:
+{ "questions": [
+  { "id": 1, "category": "HR", "text": "Unique HR question..." },
+  { "id": 2, "category": "Technical", "text": "Unique Technical question..." }
+] }`;
+
+        const completion = await ai.chat.completions.create({
+            model: 'llama-3.1-8b-instant',
+            messages: [{ role: 'user', content: prompt }], response_format: { type: 'json_object' }
         });
 
         let resultStr = completion.choices[0].message.content;
         resultStr = resultStr.replace(/```json/g, "").replace(/```/g, "").trim();
-        const questions = JSON.parse(resultStr);
+        let parsed = JSON.parse(resultStr);
+        const questions = parsed.questions || parsed;
         
         res.json(questions);
     } catch (err) {
         console.error(err);
-        res.status(500).json({ error: 'Failed to generate questions' });
+        res.status(200).json([
+          { id: 1, category: 'Behavioral', text: 'Tell me about yourself and your professional background.', type: 'interview' },
+          { id: 2, category: 'Technical', text: 'Describe a complex technical challenge you recently solved.', type: 'interview' }
+        ]);
+    }
+});
+
+app.post('/api/evaluate-answer', async (req, res) => {
+    try {
+        const { question, answer, role } = req.body;
+        const prompt = `Act as an expert technical interviewer. The candidate for a ${role} role answered the question:
+Question: ${question}
+Answer: ${answer}
+
+Evaluate the answer and provide exactly this JSON structure (no markdown):
+{
+  "score": 8,
+  "technicalAccuracy": "evaluation string",
+  "communication": "evaluation string",
+  "confidence": "evaluation string",
+  "improvement": "suggestion string",
+  "followUpQuestion": "a new question if needed, else null"
+}`;
+        
+        const completion = await ai.chat.completions.create({
+            model: 'llama-3.1-8b-instant',
+            messages: [{ role: 'user', content: prompt }], response_format: { type: 'json_object' }
+        });
+        
+        let resultStr = completion.choices[0].message.content.trim();
+        const jsonMatch = resultStr.match(/\{[\s\S]*\}/);
+        if (!jsonMatch) throw new Error("AI did not return a valid JSON object.");
+        res.json(JSON.parse(jsonMatch[0]));
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Failed to evaluate answer' });
     }
 });
 
@@ -410,26 +469,31 @@ app.post('/api/analyze-interview', async (req, res) => {
             answer: answers[i] || "No response provided."
         }));
 
-        const prompt = `Act as a senior HR manager. A candidate for a ${role} role (with skills: ${skills.join(', ')}) just completed a behavioral interview.
+        const prompt = `Act as a senior HR manager and Technical Recruiter. A candidate for a ${role} role (with skills: ${skills.join(', ')}) just completed an AI interview.
 Questions and Transcribed Answers: ${JSON.stringify(interviewData)}.
 
 Task:
-1. Evaluate each answer for professionalism, relevance, and technical accuracy where applicable.
-2. If answers are short, gibberish, or irrelevant, penalize the score significantly.
-3. Provide a feedback report in JSON format.
-
-Respond ONLY with a valid JSON object:
+Provide a highly detailed Final Report evaluating the candidate's entire performance.
+Respond ONLY with a valid JSON object in this exact structure (no markdown):
 {
-  "summary": "Detailed performance overview (be honest if they failed).",
-  "strengths": ["Strength 1", "Strength 2"],
-  "improvements": ["Area 1", "Area 2"],
-  "scores": { "confidence": 0-100, "clarity": 0-100, "eyeContact": 0-100, "total": 0-100 }
-}
-Do not include markdown.`;
+  "summary": "Overall executive summary of performance.",
+  "scores": {
+    "overall": 0,
+    "technical": 0,
+    "behavioral": 0,
+    "hr": 0,
+    "communication": 0,
+    "confidence": 0
+  },
+  "strengths": ["Area 1", "Area 2"],
+  "weaknesses": ["Area 1", "Area 2"],
+  "improvements": ["Suggestion 1", "Suggestion 2"],
+  "recommendedLearning": ["Topic 1", "Topic 2"]
+}`;
 
-        const completion = await groq.chat.completions.create({
-            messages: [{ role: 'user', content: prompt }],
-            model: 'llama-3.3-70b-versatile',
+        const completion = await ai.chat.completions.create({
+            model: 'llama-3.1-8b-instant',
+            messages: [{ role: 'user', content: prompt }], response_format: { type: 'json_object' }
         });
 
         let resultStr = completion.choices[0].message.content;
@@ -473,9 +537,9 @@ Respond ONLY with a JSON object:
 }
 Do not include markdown.`;
 
-        const completion = await groq.chat.completions.create({
-            messages: [{ role: 'user', content: prompt }],
-            model: 'llama-3.3-70b-versatile',
+        const completion = await ai.chat.completions.create({
+            model: 'llama-3.1-8b-instant',
+            messages: [{ role: 'user', content: prompt }], response_format: { type: 'json_object' }
         });
 
         const content = completion.choices[0].message.content;
@@ -487,7 +551,7 @@ Do not include markdown.`;
         res.json(JSON.parse(cleanJson));
     } catch (err) {
         console.error("Technical AI Error:", err);
-        res.status(500).json({ 
+        res.status(200).json({ 
             title: "Two Sum", 
             text: "Given an array of integers, return indices of the two numbers such that they add up to a specific target.",
             difficulty: "Easy",
@@ -606,10 +670,9 @@ Provide feedback strictly as a valid JSON object with the following format:
 }
 Do not include any markdown code blocks, just return raw JSON.`;
 
-        const completion = await groq.chat.completions.create({
-            messages: [{ role: 'user', content: prompt }],
-            model: 'llama-3.3-70b-versatile',
-            temperature: 0.2
+        const completion = await ai.chat.completions.create({
+            model: 'llama-3.1-8b-instant',
+            messages: [{ role: 'user', content: prompt }], response_format: { type: 'json_object' }
         });
 
         let content = completion.choices[0].message.content.trim();
